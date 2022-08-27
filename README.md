@@ -1,8 +1,7 @@
-Acquia BLT Toggle Modules integration
+Acquia BLT PHPMD testing integration
 ====
 
-This is an [Acquia BLT](https://github.com/acquia/blt) plugin providing a process for toggling modules on a per 
-environment basis.
+This is an [Acquia BLT](https://github.com/acquia/blt) plugin providing a process for testing code using [PHP Mess Detector](https://phpmd.org).
 
 LLNL does not provide any direct support for this 
 software or provide any warranty as to its stability.
@@ -15,12 +14,14 @@ To use this plugin, you must already have a Drupal project using BLT 13.
 
 `composer require llnl/blt-phpmd`
 
-2. Initialize the toggle settings for your project:
+2. Initialize the exclude settings for your project:
 
 `blt recipes:config:init:phpmd`
 
 3. Update your `blt.yml` file with the list of modules you wish to exclude from phpmd validation. It is
 valid to have no modules to exclude from testing.
+
+4. Copy the `phpmd.xml.dist` file to `phpmd.xml` in the root directory of your project and configure rules according to [PHPMD](https://phpmd.org/documentation/)
 
 There are two commands included `validate:phpmd:files` and `validate:phpmd:file`. 
 
