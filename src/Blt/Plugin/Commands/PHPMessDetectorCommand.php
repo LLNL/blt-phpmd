@@ -58,9 +58,10 @@ class PHPMessDetectorCommand extends BltTasks {
    */
   public function scanAll() {
     $this->say("Running PHP Mess on custom modules and themes...");
-    $custom_module_path = 'docroot/modules/custom';
-    $custom_theme_path = 'docroot/themes/custom';
-    $custom_profile_path = 'docroot/profiles/custom';
+    $docroot = $this->getConfigValue('docroot') ?: 'docroot';
+    $custom_module_path = "{$docroot}/modules/custom";
+    $custom_theme_path = "{$docroot}/themes/custom";
+    $custom_profile_path = "{$docroot}/profiles/custom";
 
     $exclude_module_paths = [];
     $exclude_module = '';
@@ -73,9 +74,21 @@ class PHPMessDetectorCommand extends BltTasks {
       $exclude_module = "--exclude " . implode(',', $exclude_module_paths);
     }
 
-    $is_module_success = $this->taskExec("$this->phpmdBin $custom_module_path $exclude_module $this->reportFormat $this->rules $this->fileSuffixes")->run()->wasSuccessful();
-    $is_theme_success = $this->taskExec("$this->phpmdBin $custom_theme_path $this->reportFormat $this->rules $this->fileSuffixes")->run()->wasSuccessful();
-    $is_profile_success = $this->taskExec("$this->phpmdBin $custom_profile_path $this->reportFormat $this->rules $this->fileSuffixes")->run()->wasSuccessful();
+    $is_module_success = TRUE;
+    $is_theme_success = TRUE;
+    $is_profile_success = TRUE;
+
+    if (\file_exists($custom_module_path) && \is_dir($custom_module_path)) {
+      $is_module_success = $this->taskExec("$this->phpmdBin $custom_module_path $exclude_module $this->reportFormat $this->rules $this->fileSuffixes")->run()->wasSuccessful();
+    }
+
+    if (\file_exists($custom_theme_path) && \is_dir($custom_theme_path)) {
+      $is_theme_success = $this->taskExec("$this->phpmdBin $custom_theme_path $this->reportFormat $this->rules $this->fileSuffixes")->run()->wasSuccessful();
+    }
+
+    if (\file_exists($custom_profile_path) && \is_dir($custom_profile_path)) {
+      $is_profile_success = $this->taskExec("$this->phpmdBin $custom_profile_path $this->reportFormat $this->rules $this->fileSuffixes")->run()->wasSuccessful();
+    }
 
     $has_failed_phpmd_validation = !$is_module_success || !$is_theme_success || !$is_profile_success;
 
